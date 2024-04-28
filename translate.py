@@ -27,10 +27,10 @@ def preprocess_note(notes):
 
 
 def main():
-    input_path = "C:/Users/reine/OneDrive/Desktop/SNU/2024/mimic/mimic-cxr-reports/result.csv"
+    input_path = "write input path here" 
     df_origin = pd.read_csv(input_path, names=['', 'id', 'note'])
 
-    output_path = "C:/Users/reine/OneDrive/Desktop/SNU/2024/mimic/mimic-cxr-reports/translated_checked_final.csv"
+    output_path = "write output path here"
     df_result = pd.DataFrame(columns=['id', 'note', 'note_kor'])
     i = 0
 
