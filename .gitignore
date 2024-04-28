@@ -1,0 +1,5 @@
+# dataset from AIHub
+./dataset
+
+# API key
+.env
