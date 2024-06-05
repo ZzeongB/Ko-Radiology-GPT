@@ -1,0 +1,6 @@
+trl
+peft
+accelerate
+gradio
+spaces
+transformers
