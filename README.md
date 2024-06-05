@@ -12,9 +12,7 @@ Ko-Radiology-GPT는 한국어로 작성된 흉부 X-선 방사선 보고서에 �
 * Method: Instruction-following(by Stanford Alpaca) 방식으로 학습을 진행하였습니다. 데이터의 생성에는 GPT-3.5 turbo API를 이용하였습니다.
 
 
-
-## How to Use
-### Environment
+## Environment
 제공드린 Dockerfile을 사용하시면 됩니다.  
 
 * Docker Image Build
@@ -38,7 +36,7 @@ docker exec -it hippo /bin/bash
 ```
 hippo는 실행중인 컨테이너의 이름입니다.
 
-### Data Preprocessing
+## Data Preprocessing
 
 1. MIMIC-CXR 한국어 번역
 
