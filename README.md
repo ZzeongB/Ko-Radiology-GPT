@@ -36,91 +36,42 @@ docker exec -it hippo /bin/bash
 ```
 hippo는 실행중인 컨테이너의 이름입니다.
 
-## Data Preprocessing
+* Requirements 다운로드
+이후 필요한 모듈들을 아래 명령어로 다운로드하면 됩니다.
+```bash
+bash setup.sh
+```
 
+## Data Preprocessing
 1. MIMIC-CXR 한국어 번역
+```bash
+python translate.py --input-path /path/to/input --output-path /path/to/output
+```
 
 2. Data Preprocessing
 번역된 MIMIC-CXR 데이터 및 AI hub 데이터들의 전처리 과정입니다. 
-`{id, note}` 형식의 csv 데이터를 `input/` 디렉토리에 저장하고, 아래 명령어를 실행하면, `output/` 디렉토리에 결과가 저장됩니다. `API_KEY` 자리에는 OpenAI에서 발급받은 API Key를 입력하면 됩니다.
+`{id, note}` 형식의 csv 데이터를 `input/` 디렉토리에 저장하고, 아래 명령어를 실행하면, `output/` 디렉토리에 결과가 저장됩니다. `API_KEY` 자리에는 OpenAI에서 발급받은 API Key를 입력하면 됩니다. 각 과정의 디테일은 아래 Details of User Manual을 참고해주세요!
 
 ```bash
-python bash preprocess.sh API_KEY
+bash preprocess.sh API_KEY
 ```  
 
-### Details of Data Preprocessing
-
-Data Generation은 다음의 단계를 거쳐 이루어집니다.  
-
-0. (MIMIC-CXR data only) MIMIC-CXR 데이터셋에서 방사선 판독보고서 파일인 notes를 전처리합니다.  
-보고서마다 형식이 제각각이기 때문에, 보고서에서 핵심 정보를 담고 있는  
-
-** "EXAMINATION", "HISTORY", "INDICATION", "TECHNIQUE",  
-"COMPARISON", "FINDINGS", "IMPRESSION"**  
-
-항목을 중심으로 전처리를 수행하였습니다.
-
-```bash
-python preprocessing/preprocess_mimic_cxr.py --input_path INPUT_PATH --save_path SAVE_PATH
-
-```
-* input_path: MIMIC-CXR notes 데이터셋이 위치한 경로입니다.  
-* save_path: 전처리된 데이터셋이 저장될 경로입니다.
-
-
-1. OpenAI API를 이용하여 instruction을 생성합니다.  
-```bash
-python preprocessing/instruction_generator.py --input_path INPUT_PATH --save_path SAVE_PATH --api_key API_KEY
-```  
-이 때 max_requesets/token_per_minute, max_attemps 등 API 세부 설정을 변경하실 수 있습니다.  
-세부 파라미터는 코드를 참조하세요!  
-  
-2. API Response에서 생성된 Instruction을 후처리하여, 각 Instruction에 대한 answer를 생성하도록 명령하는 prompt를 생성합니다.
-```bash
-python preprocessing/postproc_question.py --input_path INPUT_PATH --save_path SAVE_PATH
-```  
-  
-3. OpenAI API를 다시 이용하여 후처리한 데이터에 대한 Answer를 생성합니다.  
-```bash
-python preprocessing/answer_generator.py --input_path INPUT_PATH --save_path SAVE_PATH --api_key API_KEY
-```  
-4. 생성한 Instruction-Answer 쌍을 후처리합니다.  
-```bash
-python preprocessing/answer_postprocess.py --input_path INPUT_PATH --save_path SAVE_PATH
-```
-
-5. 마지막으로 후처리된 데이터를 fine-tuning을 위한 형식으로 고칩니다.
-```bash
-python preprocessing/csv_to_jsonl_converter.py --input_path INPUT_PATH --save_path SAVE_PATH
-```
-자, 이제 마지막 `SAVE_PATH`에는 fine-tuning을 위해 필요한 데이터셋이 담겨있습니다.
-
-## Fine-tuned Llama Model
+## Fine-tuning Llama Model
 이 프로젝트는 특정 작업을 위해 Llama 모델을 파인 튜닝하는 것을 포함합니다. 모델은 사용자 정의 데이터셋에서 훈련되며, 훈련 과정은 다양한 매개변수로 사용자 정의할 수 있습니다.
-
-### Prerequisites
 먼저, 아래 명령어로 Huggingface-Cli에 로그인해야 합니다.
 ```bash
 # huggingface에 로그인하신 후 토큰을 발급하세요. Y/n 질문에는 n 으로 대답하면 됩니다.
 !huggingface-cli login
 ```
-Python이 기기에 설치되어 있는지 확인하세요. 프로젝트는 또한 다음 Python 패키지를 필요로 합니다:
 
-- trl
-- peft
-- accelerate
-- bitsandbytes
-
-pip를 사용하여 이 패키지들을 설치할 수 있습니다:
-
+pip를 사용하여 필요한 패키지들을 설치해야 합니다.
 ```bash
 pip install -r requirements.txt
 ```
 
-### Run fine-tuning script
 아래 명령어를 실행하여 fine-tuning으르 하면 됩니다. 
 ```bash
-python "./fine_tuning.py" \
+python "src/fine_tuning.py" \
 --output_dir --OUTPUT-DIR \
 --model_name_or_path "meta-llama/Llama-2-7b-chat-hf" \
 --data_path --DATA-PATH \
@@ -144,7 +95,8 @@ python "./fine_tuning.py" \
 
 아래 명령어는 예시입니다.
 ```bash
-python "./fine_tuning.py" \
+# Example: with 006-Medical dataset
+python "src/fine_tuning.py" \
 --output_dir "./finetuned_model" \
 --model_name_or_path "meta-llama/Llama-2-7b-chat-hf" \
 --data_path "output/006-Medical_postprocess.jsonl" \
@@ -163,19 +115,27 @@ python "./fine_tuning.py" \
 --ddp_timeout 1800
 ```
 
-
-
--------
-
-### Inference
+## Inference
 학습된 모델을 이용하여 답변을 생성하고자 하는 경우, 다음의 명령어를 사용하시면 됩니다.  
 
 ```bash
-python inference/inference.py --ft_path CKPT_PATH
+python src/inference.py --ft_path MODEL_ID
 ```
 
-해당 모듈에서는 학습된 radiology_GPT가 챗봇 형식으로 사용자와 질의응답을 하게 됩니다.  
-이전에 이루어졌던 대화를 반영하여 답변을 생성하게 됩니다.  
+해당 모듈에서는 학습된 radiology_GPT가 챗봇 형식으로 사용자와 질의응답을 하게 됩니다. 이전에 이루어졌던 대화를 반영하여 답변을 생성하게 됩니다.  
+저희가 pre-train한 모델은 `h2a0e0u2n/changtongsul`에서 찾아볼 수 있습니다. 아래 명령어로 pretrained model을 이용해보세요!
+
+```bash
+python src/inference.py --ft_path h2a0e0u2n/changtongsul
+```
+
+## Demo
+아래 명령어로, interactive한 인터페이스에서 모델을 실행할 수 있습니다.
+
+```bash
+python app.py --model_id MODEL_ID
+```
+# Not Complete
 
 ### Comparison
 다른 모델들의 답변을 받아 보고 싶으실 경우, Comparison 디렉토리에 있는 모듈들을 활용하시면 됩니다.  
@@ -239,6 +199,50 @@ python app.py
 ```  
   
 명령어 실행 후 터미널에 출력되는 public url을 클릭하시면 Demo를 사용하실 수 있습니다.  
+
+
+## Details of User Manual
+### Data Preprocessing
+
+Data Generation은 다음의 단계를 거쳐 이루어집니다.  
+
+0. (MIMIC-CXR data only) MIMIC-CXR 데이터셋에서 방사선 판독보고서 파일인 notes를 전처리합니다.  
+보고서마다 형식이 제각각이기 때문에, 보고서에서 핵심 정보를 담고 있는  **"EXAMINATION", "HISTORY", "INDICATION", "TECHNIQUE",  
+"COMPARISON", "FINDINGS", "IMPRESSION"**  항목을 중심으로 전처리를 수행하였습니다.
+
+```bash
+python preprocessing/preprocess_mimic_cxr.py --input_path INPUT_PATH --save_path SAVE_PATH
+```
+* input_path: MIMIC-CXR notes 데이터셋이 위치한 경로입니다.  
+* save_path: 전처리된 데이터셋이 저장될 경로입니다.
+
+
+1. OpenAI API를 이용하여 instruction을 생성합니다.  
+```bash
+python preprocessing/instruction_generator.py --input_path INPUT_PATH --save_path SAVE_PATH --api_key API_KEY
+```  
+이 때 max_requesets/token_per_minute, max_attemps 등 API 세부 설정을 변경하실 수 있습니다.  
+세부 파라미터는 코드를 참조하세요!  
+  
+2. API Response에서 생성된 Instruction을 후처리하여, 각 Instruction에 대한 answer를 생성하도록 명령하는 prompt를 생성합니다.
+```bash
+python preprocessing/postproc_question.py --input_path INPUT_PATH --save_path SAVE_PATH
+```  
+  
+3. OpenAI API를 다시 이용하여 후처리한 데이터에 대한 Answer를 생성합니다.  
+```bash
+python preprocessing/answer_generator.py --input_path INPUT_PATH --save_path SAVE_PATH --api_key API_KEY
+```  
+4. 생성한 Instruction-Answer 쌍을 후처리합니다.  
+```bash
+python preprocessing/answer_postprocess.py --input_path INPUT_PATH --save_path SAVE_PATH
+```
+
+5. 마지막으로 후처리된 데이터를 fine-tuning을 위한 형식으로 고칩니다.
+```bash
+python preprocessing/csv_to_jsonl_converter.py --input_path INPUT_PATH --save_path SAVE_PATH
+```
+자, 이제 마지막 `SAVE_PATH`에는 fine-tuning을 위해 필요한 데이터셋이 담겨있습니다.
 
 # Reference
 [KAIST Asclepius](https://github.com/starmpcc/Asclepius)  
