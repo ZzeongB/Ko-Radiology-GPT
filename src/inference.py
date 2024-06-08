@@ -3,7 +3,7 @@ from transformers import AutoTokenizer
 from peft import AutoPeftModelForCausalLM
 
 # model_path에 본인의 final_output_2가 저장된 경로를 입력해주세요
-model_path = "/content/drive/My Drive/changtongsul/final_output_2"
+model_path = "h2a0e0u2n/changtongsul"
 
 # Load the tokenizer and model from the path where they were saved
 tokenizer = AutoTokenizer.from_pretrained(model_path)
@@ -13,10 +13,10 @@ def ask_question(question, model, tokenizer):
     """Function to ask a question to the model and get an answer."""
     # Encode the question to model input
     input_ids = tokenizer.encode(question, return_tensors="pt")
-
+    print("Encoded inputs")
     # Generate a response from the model // 답변이 길어서 문장 중간에 잘릴 경우 max_length를 늘려주세요.
     output_ids = model.generate(input_ids, max_length=1000)
-
+    print("Generated output")
     # Decode the output ids to a string
     answer = tokenizer.decode(output_ids[0], skip_special_tokens=True)
     return answer
