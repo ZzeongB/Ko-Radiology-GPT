@@ -1,9 +1,9 @@
 import pandas as pd
 import time
+import argparse
 from googletrans import Translator
 
 google = Translator()
-
 
 def preprocess_note(notes):
     res = ""
@@ -25,12 +25,9 @@ def preprocess_note(notes):
 
     return res
 
-
-def main():
-    input_path = "write input path here" 
+def main(input_path, output_path):
     df_origin = pd.read_csv(input_path, names=['', 'id', 'note'])
 
-    output_path = "write output path here"
     df_result = pd.DataFrame(columns=['id', 'note', 'note_kor'])
     i = 0
 
@@ -54,4 +51,10 @@ def main():
     df_result.to_csv(output_path, mode='a', header=False, encoding="utf-8-sig")
 
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser(description='Translate notes.')
+    parser.add_argument('--input-path', type=str, required=True, help='Input file path')
+    parser.add_argument('--output-path', type=str, required=True, help='Output file path')
+
+    args = parser.parse_args()
+
+    main(args.input_path, args.output_path)
