@@ -1,6 +1,6 @@
 # 🚑🏥☢️ Ko-Radiology-GPT ☢️🏥🚑
 ### Real-time Q&A Large Language Model focusing on chest X-ray radiology report **in Korean**
-
+![Demo Image](demo.png)
 ## Introduction
 Ko-Radiology-GPT는 한국어로 작성된 흉부 X-선 방사선 보고서에 초점을 맞춘 실시간 질의응답 대형 언어 모델입니다. 이는 기존에 영어 기반의 방사선 판독보고서 챗봇 [Hippo](https://github.com/healthhub-ai/SNU-Radiology-GPT/)를 한국어로 확장하고 개선한 것으로, 복잡한 의료 용어와 방사선 판독 결과를 이해하고, 사용자의 질문에 대해 정확하고 신속하게 답변할 수 있습니다.
 
@@ -144,12 +144,13 @@ python src/app.py --model MODEL_PATH
 python src/app.py --model ko-gpt
 ```
 
-## Details of User Manual
-### Data Preprocessing
+# Details of User Manual
+## Data Preprocessing
 
 Data Generation은 다음의 단계를 거쳐 이루어집니다.  
 
 0. (MIMIC-CXR data only) MIMIC-CXR 데이터셋에서 방사선 판독보고서 파일인 notes를 전처리합니다.  
+
 보고서마다 형식이 제각각이기 때문에, 보고서에서 핵심 정보를 담고 있는  **"EXAMINATION", "HISTORY", "INDICATION", "TECHNIQUE",  
 "COMPARISON", "FINDINGS", "IMPRESSION"**  항목을 중심으로 전처리를 수행하였습니다.
 
@@ -185,7 +186,7 @@ python preprocessing/answer_postprocess.py --input_path INPUT_PATH --save_path S
 ```bash
 python preprocessing/csv_to_jsonl_converter.py --input_path INPUT_PATH --save_path SAVE_PATH
 ```
-자, 이제 마지막 `SAVE_PATH`에는 fine-tuning을 위해 필요한 데이터셋이 담겨있습니다.
+자, 이제 `SAVE_PATH`에는 fine-tuning을 위해 필요한 데이터셋이 담겨있습니다.
 
 # Reference
 [KAIST Asclepius](https://github.com/starmpcc/Asclepius)  
