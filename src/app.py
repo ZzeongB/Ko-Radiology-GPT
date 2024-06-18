@@ -9,7 +9,10 @@ from transformers import AutoModelForCausalLM, AutoTokenizer, TextIteratorStream
 from huggingface_hub import login
 from peft import AutoPeftModelForCausalLM
 
-login(token=os.getenv("HF_LOGIN_TOKEN"))
+# login(token=os.getenv("HF_LOGIN_TOKEN"))
+# os.environ["CUDA_VISIBLE_DEVICES"]="0"
+# os.environ["CUDA_LAUNCH_BLOCKING"]="1"
+
 MAX_MAX_NEW_TOKENS = 2048
 DEFAULT_MAX_NEW_TOKENS = 1024
 MAX_INPUT_TOKEN_LENGTH = int(os.getenv("MAX_INPUT_TOKEN_LENGTH", "4096"))
@@ -119,7 +122,7 @@ def generate(
     #     )
     # input_ids = input_ids.to(model.device)
     print("received message: ", message)
-    input_ids = tokenizer.encode(message, return_tensors="pt")
+    input_ids = tokenizer.encode(message, return_tensors="pt").to(model.device)
 
     streamer = TextIteratorStreamer(
         tokenizer, timeout=10.0, skip_prompt=True, skip_special_tokens=True
@@ -197,4 +200,4 @@ with gr.Blocks(css="style.css") as demo:
     gr.Markdown(LICENSE)
 
 if __name__ == "__main__":
-    demo.queue(max_size=20).launch()
+    demo.queue(max_size=20).launch(share=True)
