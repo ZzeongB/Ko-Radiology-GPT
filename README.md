@@ -160,13 +160,16 @@ python src/app.py --model ko-gpt
 본 프로젝트에서 개발한 Ko-GPT의 답변을 받아오기 위해 이용할 수 있습니다.
 
 ### Evaluation
-GPT-4를 이용하여 평가가 이루어집니다. 평가 지표는 1. Accuracy 2. Conciseness 3. Consistency 4. Understandability의 4가지가 있으며, 각 1점부터 4점까지 점수를 매겨 이루어집니다.
+GPT-4를 이용하여 평가가 이루어집니다. 평가 지표는 1. Accuracy 2. Conciseness 3. Consistency 4. Understandability의 4가지가 있으며, 각 1점부터 4점까지 점수를 매겨 이루어집니다. 더불어 Ko-GPT와 다른 영어 모델의 답변 유사도를 보기 위하여 5. Similarity를 추가로 측정하였습니다.
+
 GPT-4로부터 각 모델의 답변을 평가하는 경우, `evaluate.py`를 이용하면 됩니다.
 
 ```bash
-
+python ./evaluate.py --input_path INPUT_PATH --output_path OUTPUT_PATH --type TYPE 
 ```
-
+* INPUT_PATH
+* OUTPUT_PATH
+* TYPE: acc(accuracy), coc(conciseness), cos(consistency), und(underestandability), sim(similarity) 중 하나를 입력하면 됩니다.
 
 # Details of User Manual
 ## Data Preprocessing
