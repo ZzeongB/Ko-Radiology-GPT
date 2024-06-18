@@ -161,9 +161,15 @@ python src/app.py --model ko-gpt
 
 ### Evaluation
 GPT-4를 이용하여 평가가 이루어집니다. 평가 지표는 1. Accuracy 2. Conciseness 3. Consistency 4. Understandability의 4가지가 있으며, 각 1점부터 4점까지 점수를 매겨 이루어집니다. 더불어 Ko-GPT와 다른 영어 모델의 답변 유사도를 보기 위하여 5. Similarity를 추가로 측정하였습니다.
-
 GPT-4로부터 각 모델의 답변을 평가하는 경우, `evaluate.py`를 이용하면 됩니다.
 
+아래의 모든 모듈을 사용하기 위해서는 secrets.py 파일이 필요합니다. 해당 파일은 다음과 같은 내용을 담고 있으며, evaluate_*.py 파일들과 동일한 directory hierarchy에 위치시켜두시면 됩니다.
+
+```python
+OPENAI_API_KEY = "your API key"  ## GPT4를 사용하기 위한 OpenAI API key
+```
+
+이후 아래 명령어를 사용하여 Evaluation을 진행할 수 있습니다.
 ```bash
 python ./evaluate.py --input_path INPUT_PATH --output_path OUTPUT_PATH --type TYPE 
 ```
