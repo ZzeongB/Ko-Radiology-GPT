@@ -118,10 +118,10 @@ You are also provided with {num_samples} corresponding responses from {num_sampl
 Your task is to compare each model's responses and evaluate the response's consistency based on the following criteria.
 
 Criteria:
-1. Unacceptable (1 point): The model's response is totally inconsistent, confusing and contradictory.
-2. Poor (2 points): The model's answer is somewhat consistent. It is unstable and less reliable.
-3. Satisfactory (3 points): The answers are largely consistent and reliable.
-4. Excellent (4 points): Everything in the answer is consistent, and there is no contradiction.
+1. Unacceptable (1 point): The model's answers mostly consist of medical terms that are difficult for non-medical experts to interpret.
+2. Poor (2 points): The model's answers are difficult for non-medical experts to understand. Even though there are difficult medical terms, no explanation is provided.
+3. Satisfactory (3 points): The model's answers can be understood to some extent by non-medical experts. Some difficult medical terms are explained.
+4. Excellent (4 points): The model's answers can be easily understood even by non-medical experts. If there is difficult medical terminology in the answer, an explanation is also provided.
 
 When evaluating each score based on above criteria, ensure that each judgement is not affected by other model's response.
 First line must contain only {num_samples} values, which indicate the score for each model, respectively.
@@ -129,31 +129,6 @@ The {num_samples} scores are separated by a space.
 Output scores without explanation.
 """
 
-prompt_sim = """You are an intelligent language model. 
-
-[Radiology Report Begin]
-{report}
-[Radiology Report End]
-
-[Question Begin]
-{question}
-[Question End]
-
-{answers}
-Above, we provide you a radiology report and the question about the radiology report.
-You are also provided with {num_samples} corresponding responses from {num_samples} different language models.
-Your task is to compare the models' responses and evaluate their similarity based on the following criteria.
-
-Criteria:
-1. Unacceptable (1 point): The two answers have little in common and contain completely different content.
-2. Poor (2 points): There are some similar elements in the two answers, but most of them contain different content.
-3. Satisfactory (3 points): The two answers are generally similar, and they have a lot in common. Most of the key information related to the question overlaps.
-4. Excellent (4 points): The two answers are almost identical, and there are only detailed differences.
-
-You must only consider the content of the answers, it doesn't matter what language the answers are in.
-First line must contain only 1 value, which indicate the score for similarity.
-Output scores without explanation.
-"""
 
 def generate_prompt(type, report, question, samples):
     answers = ""
@@ -192,15 +167,6 @@ def generate_prompt(type, report, question, samples):
             {
                 "role": "user",
                 "content": prompt_cos.format(
-                    report=report, question=question, answers=answers, num_samples=len(samples)
-                ),
-            }
-        ]
-    elif type == "sim":  # similarity
-        return [
-            {
-                "role": "user",
-                "content": prompt_sim.format(
                     report=report, question=question, answers=answers, num_samples=len(samples)
                 ),
             }
