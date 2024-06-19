@@ -15,12 +15,12 @@ Ko-Radiology-GPT는 한국어로 작성된 흉부 X-선 방사선 보고서에 �
 ## 💻 Environment
 제공드린 Dockerfile을 사용하시면 됩니다.  
 
-1. Docker Image Build
+#### 1. Docker Image Build
 ```bash
 docker build -t hippo:latest .
 ```
 
-2. Docker Run Container
+#### 2. Docker Run Container
 ```bash
 docker run -v MOUNT_PATH:/workspace --gpus GPU_NUM -it --name "hippo" hippo:latest
 ```
@@ -43,14 +43,14 @@ bash setup.sh
 ```
 
 ## 📚 Data Preprocessing
-1. MIMIC-CXR 한국어 번역
+#### 1. MIMIC-CXR 한국어 번역
 
 [MIMIC-CXR 사이트](https://physionet.org/content/mimic-cxr/2.0.0/)를 통해 데이터를 다운받은 후, 아래 명령어를 통해 한국어로 번역해보세요.
 ```bash
 python translate.py --input-path INPUT_PATH --output-path OUTPUT_PATH
 ```
 
-2. Data Preprocessing
+#### 2. Data Preprocessing
 
 번역된 MIMIC-CXR 데이터 및 AI hub 데이터들의 전처리 과정입니다. 
 `{id, note}` 형식의 csv 데이터를 `input/` 디렉토리에 저장하고, 아래 명령어를 실행하면, `output/` 디렉토리에 결과가 저장됩니다. `API_KEY` 자리에는 OpenAI에서 발급받은 API Key를 입력하면 됩니다. 각 과정의 디테일은 아래 Details of User Manual을 참고해주세요!
@@ -150,7 +150,7 @@ python src/app.py --model ko-gpt
 ### Comparison
 다른 모델들의 답변을 받아 보고 싶으실 경우, Comparison 디렉토리에 있는 모듈들을 활용하시면 됩니다.  
 
-1. llama2.py
+#### 1. llama2.py
 Fine-tuning 전 Llama2 model의 답변을 받아오고 싶을 때 사용하시면 됩니다. 라마2에 전송할 prompt를 'prompt'라는 column에 담고있는 csv 파일을 input_path에 명시해주시면, 'llama2_answer'이라는 새로운 column에 답변을 저장하여 명시해주신 save_path에 csv 파일로 반환합니다.
 
 Llama2를 사용하기 위해서는 huggingface CLI login이 필요합니다. 앞서 Fine Tuning 섹션에서 설명드린 방법대로 CLI login을 진행해주시면 됩니다.
@@ -160,7 +160,7 @@ python comparison/llma2.py --input_path INPUT_PATH --save_path OUTPUT_PATH
 * INPUT_PATH: path to csv input file
 * OUTPUT_PATH: path to csv output file
 
-2. hippo.py
+#### 2. hippo.py
 이전 프로젝트에서 개발한 영어 질의응답 모델인 hippo의 답변을 받아오고 싶을 때 사용하시면 됩니다. Hippo에 전송할 prompt를 'prompt'라는 column에 담고있는 csv 파일을 input_path에 명시해주시면, 'hippo_answer'이라는 새로운 column에 답변을 저장하여 명시해주신 save_path에 csv 파일로 반환합니다.
 Base model을 Llama2로 하고 있기에, 역시 huggingface CLI login이 필요합니다. 
 ```bash
@@ -170,7 +170,7 @@ python comparison/hippo.py --input_path INPUT_PATH --save_path OUTPUT_PATH --hip
 * OUTPUT_PATH: path to csv output file
 * MODEL_PATH: path to pretrained model 
 
-3. koGPT.py
+#### 3. koGPT.py
 이번 프로젝트에서 개발한 한국어 질의응답 모델인 Ko-Radiology-GPT의 답변을 받아오고 싶을 때 사용하시면 됩니다. Ko-Radiology-GPT에 전송할 prompt를 'prompt'라는 column에 담고있는 csv 파일을 input_path에 명시해주시면, 'koGPT_answer'이라는 새로운 column에 답변을 저장하여 명시해주신 save_path에 csv 파일로 반환합니다.
 Base model을 Llama2로 하고 있기에, 역시 huggingface CLI login이 필요합니다. 
 ```bash
@@ -199,12 +199,12 @@ python ./evaluate.py --input_path INPUT_PATH --output_path OUTPUT_PATH --type TY
 * OUTPUT_PATH: path to csv output file
 * TYPE: acc(accuracy), coc(conciseness), cos(consistency), und(underestandability), sim(similarity) 중 하나를 입력하면 됩니다.
 
-# [Appendix] Details of User Manual
-## Data Preprocessing
+## [Appendix] Details of User Manual
+###  Data Preprocessing
 
 Data Generation은 다음의 단계를 거쳐 이루어집니다.  
 
-0. (MIMIC-CXR data only) MIMIC-CXR 데이터셋에서 방사선 판독보고서 파일인 notes를 전처리합니다.  
+#### 0. (MIMIC-CXR data only) MIMIC-CXR 데이터셋에서 방사선 판독보고서 파일인 notes를 전처리합니다.  
 
 보고서마다 형식이 제각각이기 때문에, 보고서에서 핵심 정보를 담고 있는  **"EXAMINATION", "HISTORY", "INDICATION", "TECHNIQUE", "COMPARISON", "FINDINGS", "IMPRESSION"**  항목을 중심으로 전처리를 수행하였습니다.
 
@@ -215,7 +215,8 @@ python preprocessing/preprocess_mimic_cxr.py --input_path INPUT_PATH --save_path
 * SAVE_PATH: 전처리된 데이터셋이 저장될 경로입니다.
 
 
-1. OpenAI API를 이용하여 instruction을 생성합니다.  
+#### 1. Instruction generator
+OpenAI API를 이용하여 instruction을 생성합니다.  
 ```bash
 python preprocessing/instruction_generator.py --input_path INPUT_PATH --save_path SAVE_PATH --api_key API_KEY
 ```  
@@ -227,22 +228,25 @@ python preprocessing/instruction_generator.py --input_path INPUT_PATH --save_pat
 python preprocessing/postproc_question.py --input_path INPUT_PATH --save_path SAVE_PATH
 ```  
   
-3. OpenAI API를 다시 이용하여 후처리한 데이터에 대한 Answer를 생성합니다.  
+#### 3. Answer generator
+OpenAI API를 다시 이용하여 후처리한 데이터에 대한 Answer를 생성합니다.  
 ```bash
 python preprocessing/answer_generator.py --input_path INPUT_PATH --save_path SAVE_PATH --api_key API_KEY
 ```  
-4. 생성한 Instruction-Answer 쌍을 후처리합니다.  
+#### 4. Instruction-Answer postprocess 
+생성한 Instruction-Answer 쌍을 후처리합니다.  
 ```bash
 python preprocessing/answer_postprocess.py --input_path INPUT_PATH --save_path SAVE_PATH
 ```
 
-5. 마지막으로 후처리된 데이터를 fine-tuning을 위한 형식으로 고칩니다.
+#### 5. Convert to fine-tuning version
+마지막으로 후처리된 데이터를 fine-tuning을 위한 형식으로 고칩니다.
 ```bash
 python preprocessing/csv_to_jsonl_converter.py --input_path INPUT_PATH --save_path SAVE_PATH
 ```
 자, 이제 `SAVE_PATH`에는 fine-tuning을 위해 필요한 데이터셋이 담겨있습니다.
 
-# Reference
+## Reference
 [KAIST Asclepius](https://github.com/starmpcc/Asclepius)  
 [Stanford Alpaca](https://github.com/tatsu-lab/stanford_alpaca)  
 [Open AI](https://github.com/openai/openai-cookbook/tree/main)  
