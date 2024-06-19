@@ -224,7 +224,8 @@ python preprocessing/instruction_generator.py --input_path INPUT_PATH --save_pat
 이 때 max_requesets/token_per_minute, max_attemps 등 API 세부 설정을 변경하실 수 있습니다.  
 세부 파라미터는 코드를 참조하세요!  
   
-2. API Response에서 생성된 Instruction을 후처리하여, 각 Instruction에 대한 answer를 생성하도록 명령하는 prompt를 생성합니다.
+#### 2. Instruction postprocess
+API Response에서 생성된 Instruction을 후처리하여, 각 Instruction에 대한 answer를 생성하도록 명령하는 prompt를 생성합니다.
 ```bash
 python preprocessing/postproc_question.py --input_path INPUT_PATH --save_path SAVE_PATH
 ```  
