@@ -155,7 +155,7 @@ Fine-tuning 전 Llama2 model의 답변을 받아오고 싶을 때 사용하시�
 
 Llama2를 사용하기 위해서는 huggingface CLI login이 필요합니다. 앞서 Fine Tuning 섹션에서 설명드린 방법대로 CLI login을 진행해주시면 됩니다.
 ```bash
-python llma2.py --input_path INPUT_PATH --save_path OUTPUT_PATH
+python comparison/llma2.py --input_path INPUT_PATH --save_path OUTPUT_PATH
 ```
 * INPUT_PATH: path to csv input file
 * OUTPUT_PATH: path to csv output file
@@ -164,7 +164,7 @@ python llma2.py --input_path INPUT_PATH --save_path OUTPUT_PATH
 이전 프로젝트에서 개발한 영어 질의응답 모델인 hippo의 답변을 받아오고 싶을 때 사용하시면 됩니다. Hippo에 전송할 prompt를 'prompt'라는 column에 담고있는 csv 파일을 input_path에 명시해주시면, 'hippo_answer'이라는 새로운 column에 답변을 저장하여 명시해주신 save_path에 csv 파일로 반환합니다.
 Base model을 Llama2로 하고 있기에, 역시 huggingface CLI login이 필요합니다. 
 ```bash
-python hippo.py --input_path INPUT_PATH --save_path OUTPUT_PATH --hippo_model_dir MODEL_PATH
+python comparison/hippo.py --input_path INPUT_PATH --save_path OUTPUT_PATH --hippo_model_dir MODEL_PATH
 ```
 * INPUT_PATH: path to csv input file
 * OUTPUT_PATH: path to csv output file
@@ -174,7 +174,7 @@ python hippo.py --input_path INPUT_PATH --save_path OUTPUT_PATH --hippo_model_di
 이번 프로젝트에서 개발한 한국어 질의응답 모델인 Ko-Radiology-GPT의 답변을 받아오고 싶을 때 사용하시면 됩니다. Ko-Radiology-GPT에 전송할 prompt를 'prompt'라는 column에 담고있는 csv 파일을 input_path에 명시해주시면, 'koGPT_answer'이라는 새로운 column에 답변을 저장하여 명시해주신 save_path에 csv 파일로 반환합니다.
 Base model을 Llama2로 하고 있기에, 역시 huggingface CLI login이 필요합니다. 
 ```bash
-python koGPT.py --input_path INPUT_PATH --save_path OUTPUT_PATH --fine_tuned_model_dir MODEL_PATH
+python comparison/koGPT.py --input_path INPUT_PATH --save_path OUTPUT_PATH --fine_tuned_model_dir MODEL_PATH
 ```
 
 * INPUT_PATH: path to csv input file
