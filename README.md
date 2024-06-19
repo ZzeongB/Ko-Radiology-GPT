@@ -15,12 +15,12 @@ Ko-Radiology-GPT는 한국어로 작성된 흉부 X-선 방사선 보고서에 �
 ## 💻 Environment
 제공드린 Dockerfile을 사용하시면 됩니다.  
 
-* Docker Image Build
+1. Docker Image Build
 ```bash
 docker build -t hippo:latest .
 ```
 
-* Docker Run Container
+2. Docker Run Container
 ```bash
 docker run -v MOUNT_PATH:/workspace --gpus GPU_NUM -it --name "hippo" hippo:latest
 ```
@@ -29,7 +29,7 @@ docker run -v MOUNT_PATH:/workspace --gpus GPU_NUM -it --name "hippo" hippo:late
 -it 옵션을 지정하여 터미널을 이용하여 컨테이너와 상호작용할 수 있습니다.  
 "hippo"는 컨테이너의 이름, hippo:latest는 이미지 이름입니다.  
 
-* Container 재사용  
+3. Container 재사용  
 실행중인 컨테이너에 재진입하여 작업하는 경우, 다음의 명령어를 사용하시면 됩니다.
 ```bash
 docker exec -it hippo /bin/bash
@@ -70,9 +70,9 @@ huggingface-cli login
 아래 명령어를 실행하여 fine-tuning으르 하면 됩니다. 
 ```bash
 python "src/fine_tuning.py" \
---output_dir --OUTPUT-DIR \
+--output_dir OUTPUT-DIR \
 --model_name_or_path "meta-llama/Llama-2-7b-chat-hf" \
---data_path --DATA-PATH \
+--data_path DATA-PATH \
 --num_train_epochs 3 \
 --per_device_train_batch_size 4 \
 --per_device_eval_batch_size 4 \
@@ -87,8 +87,8 @@ python "src/fine_tuning.py" \
 --gradient_checkpointing True \
 --ddp_timeout 1800
 ```
-* output_dir: 학습된 모델이 저장될 경로입니다. 
-* data_path: 전처리된 데이터셋이 저장되어 있는 경로입니다.
+* OUTPUT-DIR: 학습된 모델이 저장될 경로입니다. 
+* DATA-PAT: 전처리된 데이터셋이 저장되어 있는 경로입니다.
 다른 파라미터들도 필요에 따라 수정할 수 있습니다.
 
 아래 명령어는 예시입니다.
@@ -147,17 +147,39 @@ python src/app.py --model ko-gpt
 
 
 ## 📊 Compare and Evaluate
+### Comparison
 다른 모델들의 답변을 받아 보고 싶으실 경우, Comparison 디렉토리에 있는 모듈들을 활용하시면 됩니다.  
 
-1) llama2.py  
-라마2의 답변을 받아오고 싶을 때 사용하시면 됩니다. 라마2에 전송할 prompt를 'prompt'라는 column에 담고있는 csv 파일을 input_path에 명시해주시면, 'llama2_answer'이라는 새로운 column에 답변을 저장하여 save_path에 csv 파일로 반환합니다.  
-라마2를 사용하기 위해서는 huggingface CLI login이 필요합니다. 앞서 Fine Tuning 섹션에서 설명드린 방법대로 login을 진행해주시면 됩니다.
+1. llama2.py
+Fine-tuning 전 Llama2 model의 답변을 받아오고 싶을 때 사용하시면 됩니다. 라마2에 전송할 prompt를 'prompt'라는 column에 담고있는 csv 파일을 input_path에 명시해주시면, 'llama2_answer'이라는 새로운 column에 답변을 저장하여 명시해주신 save_path에 csv 파일로 반환합니다.
 
-2) hippo.py  
-이전 프로젝트 개발한 hippo의 답변을 받아오고 싶을 때 사용하시면 됩니다. Hippo에 전송할 prompt를 'prompt'라는 column에 담고있는 csv 파일을 input_path에 명시해주시면, 'hippo_answer'이라는 새로운 column에 답변을 저장하여 save_path에 csv 파일로 반환합니다.
+Llama2를 사용하기 위해서는 huggingface CLI login이 필요합니다. 앞서 Fine Tuning 섹션에서 설명드린 방법대로 CLI login을 진행해주시면 됩니다.
+```bash
+python llma2.py --input_path INPUT_PATH --save_path OUTPUT_PATH
+```
+* INPUT_PATH: path to csv input file
+* OUTPUT_PATH: path to csv output file
 
-3) ko-gpt.py
-본 프로젝트에서 개발한 Ko-GPT의 답변을 받아오기 위해 이용할 수 있습니다.
+2. hippo.py
+이전 프로젝트에서 개발한 영어 질의응답 모델인 hippo의 답변을 받아오고 싶을 때 사용하시면 됩니다. Hippo에 전송할 prompt를 'prompt'라는 column에 담고있는 csv 파일을 input_path에 명시해주시면, 'hippo_answer'이라는 새로운 column에 답변을 저장하여 명시해주신 save_path에 csv 파일로 반환합니다.
+Base model을 Llama2로 하고 있기에, 역시 huggingface CLI login이 필요합니다. 
+```bash
+python hippo.py --input_path INPUT_PATH --save_path OUTPUT_PATH --hippo_model_dir MODEL_PATH
+```
+* INPUT_PATH: path to csv input file
+* OUTPUT_PATH: path to csv output file
+* MODEL_PATH: path to pretrained model 
+
+3. koGPT.py
+이번 프로젝트에서 개발한 한국어 질의응답 모델인 Ko-Radiology-GPT의 답변을 받아오고 싶을 때 사용하시면 됩니다. Ko-Radiology-GPT에 전송할 prompt를 'prompt'라는 column에 담고있는 csv 파일을 input_path에 명시해주시면, 'koGPT_answer'이라는 새로운 column에 답변을 저장하여 명시해주신 save_path에 csv 파일로 반환합니다.
+Base model을 Llama2로 하고 있기에, 역시 huggingface CLI login이 필요합니다. 
+```bash
+python koGPT.py --input_path INPUT_PATH --save_path OUTPUT_PATH --fine_tuned_model_dir MODEL_PATH
+```
+
+* INPUT_PATH: path to csv input file
+* OUTPUT_PATH: path to csv output file
+* MODEL_PATH: path to pretrained model 
 
 ### Evaluation
 GPT-4를 이용하여 평가가 이루어집니다. 평가 지표는 1. Accuracy 2. Conciseness 3. Consistency 4. Understandability의 4가지가 있으며, 각 1점부터 4점까지 점수를 매겨 이루어집니다. 더불어 Ko-GPT와 다른 영어 모델의 답변 유사도를 보기 위하여 5. Similarity를 추가로 측정하였습니다.
@@ -173,25 +195,24 @@ OPENAI_API_KEY = "your API key"  ## GPT4를 사용하기 위한 OpenAI API key
 ```bash
 python ./evaluate.py --input_path INPUT_PATH --output_path OUTPUT_PATH --type TYPE 
 ```
-* INPUT_PATH
-* OUTPUT_PATH
+* INPUT_PATH: path to csv input file
+* OUTPUT_PATH: path to csv output file
 * TYPE: acc(accuracy), coc(conciseness), cos(consistency), und(underestandability), sim(similarity) 중 하나를 입력하면 됩니다.
 
-# Details of User Manual
+# [Appendix] Details of User Manual
 ## Data Preprocessing
 
 Data Generation은 다음의 단계를 거쳐 이루어집니다.  
 
 0. (MIMIC-CXR data only) MIMIC-CXR 데이터셋에서 방사선 판독보고서 파일인 notes를 전처리합니다.  
 
-보고서마다 형식이 제각각이기 때문에, 보고서에서 핵심 정보를 담고 있는  **"EXAMINATION", "HISTORY", "INDICATION", "TECHNIQUE",  
-"COMPARISON", "FINDINGS", "IMPRESSION"**  항목을 중심으로 전처리를 수행하였습니다.
+보고서마다 형식이 제각각이기 때문에, 보고서에서 핵심 정보를 담고 있는  **"EXAMINATION", "HISTORY", "INDICATION", "TECHNIQUE", "COMPARISON", "FINDINGS", "IMPRESSION"**  항목을 중심으로 전처리를 수행하였습니다.
 
 ```bash
 python preprocessing/preprocess_mimic_cxr.py --input_path INPUT_PATH --save_path SAVE_PATH
 ```
-* input_path: MIMIC-CXR notes 데이터셋이 위치한 경로입니다.  
-* save_path: 전처리된 데이터셋이 저장될 경로입니다.
+* INPUT_PATH: MIMIC-CXR notes 데이터셋이 위치한 경로입니다.  
+* SAVE_PATH: 전처리된 데이터셋이 저장될 경로입니다.
 
 
 1. OpenAI API를 이용하여 instruction을 생성합니다.  
@@ -226,5 +247,3 @@ python preprocessing/csv_to_jsonl_converter.py --input_path INPUT_PATH --save_pa
 [Stanford Alpaca](https://github.com/tatsu-lab/stanford_alpaca)  
 [Open AI](https://github.com/openai/openai-cookbook/tree/main)  
 [Huggingface Llama2 chat demo](https://huggingface.co/spaces/huggingface-projects/llama-2-7b-chat/blob/main/app.py)  
-
-
