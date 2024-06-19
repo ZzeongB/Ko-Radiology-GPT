@@ -204,7 +204,8 @@ python ./evaluate.py --input_path INPUT_PATH --output_path OUTPUT_PATH --type TY
 
 Data Generation은 다음의 단계를 거쳐 이루어집니다.  
 
-#### 0. (MIMIC-CXR data only) MIMIC-CXR 데이터셋에서 방사선 판독보고서 파일인 notes를 전처리합니다.  
+#### 0. (MIMIC-CXR data only) Preprocess MIMIC-CXR
+MIMIC-CXR 데이터셋에서 방사선 판독보고서 파일인 notes를 전처리합니다.  
 
 보고서마다 형식이 제각각이기 때문에, 보고서에서 핵심 정보를 담고 있는  **"EXAMINATION", "HISTORY", "INDICATION", "TECHNIQUE", "COMPARISON", "FINDINGS", "IMPRESSION"**  항목을 중심으로 전처리를 수행하였습니다.
 
